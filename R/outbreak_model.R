@@ -40,6 +40,7 @@
 outbreak_model <- function(num.initial.cases = NULL, prop.ascertain = NULL,
                            cap_max_days = NULL, cap_cases = NULL,
                            r0isolated = NULL, r0community = NULL, r0subclin = NULL,
+                           dist_shape = NULL, dist_scale = NULL,
                            disp.iso = NULL, disp.com = NULL, disp.subclin = NULL,
                            k = NULL, delay_shape = NULL,
                            delay_scale = NULL, prop.asym = NULL,
@@ -47,8 +48,8 @@ outbreak_model <- function(num.initial.cases = NULL, prop.ascertain = NULL,
 
   # Set up functions to sample from distributions
   # incubation period sampling function
-  incfn <- dist_setup(dist_shape = 2.322737,
-                      dist_scale = 6.492272)
+  incfn <- dist_setup(dist_shape = dist_shape,
+                      dist_scale = dist_scale)
   # incfn <- dist_setup(dist_shape = 3.303525,dist_scale = 6.68849) # incubation function for ECDC run
   # onset to isolation delay sampling function
   delayfn <- dist_setup(delay_shape,
@@ -97,31 +98,30 @@ outbreak_model <- function(num.initial.cases = NULL, prop.ascertain = NULL,
     extinct <- all(case_data$isolated)
   }
 
-  # Prepare output, group into weeks
-  weekly_cases <- case_data[, week := floor(onset / 7)
-                            ][, .(weekly_cases = .N), by = week
-                              ]
-  # maximum outbreak week
-  max_week <- floor(cap_max_days / 7)
-  # weeks with 0 cases in 0:max_week
-  missing_weeks <- (0:max_week)[!(0:max_week %in% weekly_cases$week)]
+  # # Prepare output
+  daily_cases <- case_data[, day := floor(onset)
+  ][, .(daily_cases = .N), by = day]
+  # maximum outbreak days
+  max_day <- floor(cap_max_days)
+  # weeks with 0 cases in 0:max_day
+  missing_days <- (0:max_day)[!(0:max_day %in% daily_cases$day)]
 
-  # add in missing weeks if any are missing
-  if (length(missing_weeks > 0)) {
-    weekly_cases <- data.table::rbindlist(list(weekly_cases,
-                                               data.table(week = missing_weeks,
-                                                          weekly_cases = 0)))
+  # add in missing days if any are missing
+  if (length(missing_days > 0)) {
+    daily_cases <- data.table::rbindlist(list(daily_cases,
+                                              data.table(day = missing_days,
+                                                         daily_cases = 0)))
   }
   # order and sum up
-  weekly_cases <- weekly_cases[order(week)
-                               ][, cumulative := cumsum(weekly_cases)]
-  # cut at max_week
-  weekly_cases <- weekly_cases[week <= max_week]
+  daily_cases <- daily_cases[order(day)
+  ][, cumulative := cumsum(daily_cases)]
+  # cut at max_day
+  daily_cases <- daily_cases[day <= max_day]
 
   # Add effective R0
-  weekly_cases <- weekly_cases[, `:=`(effective_r0 = mean(effective_r0_vect,
-                                                          na.rm = TRUE),
-                                        cases_per_gen = list(cases_in_gen_vect))]
+  daily_cases <- daily_cases[, `:=`(effective_r0 = mean(effective_r0_vect,
+                                                        na.rm = TRUE),
+                                    cases_per_gen = list(cases_in_gen_vect))]
   # return
-  return(weekly_cases)
+  return(daily_cases)
 }

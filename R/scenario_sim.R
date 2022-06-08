@@ -36,6 +36,7 @@
 #'
 scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NULL, cap_cases = NULL,
                          r0isolated = NULL, r0community = NULL, disp.iso = NULL, disp.com = NULL, k = NULL,
+                         dist_shape = NULL, dist_scale = NULL,
                          delay_shape = NULL, delay_scale = NULL, num.initial.cases = NULL, prop.asym = NULL,
                          quarantine = NULL, r0subclin = NULL, disp.subclin = NULL) {
 
@@ -58,6 +59,8 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
                                              disp.subclin = disp.subclin,
                                              disp.iso = disp.iso,
                                              disp.com = disp.com,
+                                             dist_shape = dist_shape,
+                                             dist_scale = dist_scale,
                                              delay_shape = delay_shape,
                                              delay_scale = delay_scale,
                                              k = k,
@@ -67,6 +70,6 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
 
   # bind output together and add simulation index
   res <- data.table::rbindlist(res)
-  res[, sim := rep(1:n.sim, rep(floor(cap_max_days / 7) + 1, n.sim)), ]
+  res[, sim := rep(1:n.sim, rep(floor(cap_max_days) + 1, n.sim)), ]
   return(res)
 }
