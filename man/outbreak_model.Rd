@@ -11,8 +11,12 @@ outbreak_model(
   cap_cases = NULL,
   r0isolated = NULL,
   r0community = NULL,
+  r0subclin = NULL,
+  dist_shape = NULL,
+  dist_scale = NULL,
   disp.iso = NULL,
   disp.com = NULL,
+  disp.subclin = NULL,
   k = NULL,
   delay_shape = NULL,
   delay_scale = NULL,
@@ -27,9 +31,13 @@ outbreak_model(
 
 \item{r0community}{numeric reproduction number for non-isolated cases (must be >0)}
 
+\item{r0subclin}{numeric reproduction number for sub-clinical non-isolated cases (must be >0)}
+
 \item{disp.iso}{numeric dispersion parameter for isolated cases (must be >0)}
 
 \item{disp.com}{numeric dispersion parameter for non-isolated cases (must be >0)}
+
+\item{disp.subclin}{numeric dispersion parameter for sub-clincial non-isolated cases (must be >0)}
 
 \item{k}{numeric skew parameter for sampling the serial interval from the incubation period}
 
@@ -61,8 +69,10 @@ case_data <- outbreak_setup(num.initial.cases = 5,
 case_data <- outbreak_step(case_data = case_data,
                            disp.iso = 1,
                            disp.com = 0.16,
+                           disp.subclin = 0.16,
                            r0isolated = 0,
                            r0community = 2.5,
+                           r0subclin = 1.25,
                            prop.asym = 0,
                            incfn = incfn,
                            delayfn = delayfn,

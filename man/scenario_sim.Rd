@@ -14,11 +14,15 @@ scenario_sim(
   disp.iso = NULL,
   disp.com = NULL,
   k = NULL,
+  dist_shape = NULL,
+  dist_scale = NULL,
   delay_shape = NULL,
   delay_scale = NULL,
   num.initial.cases = NULL,
   prop.asym = NULL,
-  quarantine = NULL
+  quarantine = NULL,
+  r0subclin = NULL,
+  disp.subclin = NULL
 )
 }
 \arguments{
