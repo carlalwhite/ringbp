@@ -1,53 +1,45 @@
 library(ringbp)
 library(tidyverse)
 
-# Make the log file
-logs <- file.path("log.txt")
-con <- file(logs, open = "wt")
-# # Send Output to log
-sink(con)
-sink(con, type = "message")
-
 scenarios <- tidyr::expand_grid(
   ## Put parameters that are grouped by disease into this data.frame
+  dist_group = list(tibble::tibble(
+    dist = c("Dist1"),
+    dist_shape = c(2.101547),
+    dist_scale = c(11.29064)
+  )),
   delay_group = list(tibble::tibble(
-    delay = c("SARS", "Wuhan"),
-    delay_shape = c(1.651524, 2.305172),
-    delay_scale = c(4.287786, 9.483875)
+    delay = c("Delay1"),
+    delay_shape = c(1.347738),
+    delay_scale = c(4.360796)
   )),
-  k_group = list(tibble::tibble(
-    theta = c("<1%", "15%", "30%"),
-    k = c(30, 1.95, 0.7)
-  )),
-  index_R0 = c(1.5, 2.5, 3.5),
-  quarantine = FALSE,
-  prop.asym = c(0, 0.1),
-  control_effectiveness = seq(0, 1, 0.2),
-  num.initial.cases = c(5, 20, 40)) %>%
-  tidyr::unnest("k_group") %>%
+  r0community = c(1.5, 2, 2.5),
+  r0isolated = c(0.1, 0.5, 0.8),
+  prop.ascertain = c(0),
+  num.initial.cases = c(1,5)) %>%
+  tidyr::unnest("dist_group") %>%
   tidyr::unnest("delay_group") %>%
   dplyr::mutate(scenario = 1:dplyr::n())
 
 ## Parameterise fixed paramters
 sim_with_params <- purrr::partial(ringbp::scenario_sim,
-                                  cap_max_days = 365,
+                                  cap_max_days = 90,
                                   cap_cases = 5000,
-                                  r0isolated = 0,
+                                  prop.asym = 0,
                                   disp.iso = 1,
-                                  disp.com = 0.16)
+                                  disp.com = 0.16,
+                                  k=0)
 
 ## Set up multicore if using see ?future::plan for details
 ## Use the workers argument to control the number of cores used.
-future::plan("multiprocess")
+future::plan("multisession")
 
 
 ## Run paramter sweep
 sweep_results <- ringbp::parameter_sweep(scenarios,
                                          sim_fn = sim_with_params,
-                                         samples = 1000,
+                                         samples = 10,
                                          show_progress = TRUE)
 
 saveRDS(sweep_results, file = "data-raw/res.rds")
 
-sink(type = "message")
-sink()
