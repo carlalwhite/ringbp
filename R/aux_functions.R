@@ -30,7 +30,7 @@ inf_fn <- function(inc_samp = NULL, k = NULL) {
 
   out <- sn::rsn(n = length(inc_samp),
                  xi = inc_samp,
-                 omega = 2,
+                 omega = 3,
                  alpha = k)
 
   out <- ifelse(out < 1, 1, out)
@@ -71,13 +71,13 @@ extinct_prob <- function(outbreak_df_week  = NULL, cap_cases  = NULL) {
 #' @importFrom dplyr group_by filter summarise ungroup
 #' @examples
 #'
-detect_extinct <- function(outbreak_df_week  = NULL, cap_cases  = NULL) {
+detect_extinct <- function(outbreak_df  = NULL, cap_cases  = NULL) {
 
-  outbreak_df_week %>%
+  outbreak_df %>%
     dplyr::group_by(sim) %>% # group by simulation run
-    dplyr::filter(week %in% 12:16) %>%
+    dplyr::filter(day %in% 90:120) %>%
     dplyr::summarise(extinct =
-                       ifelse(all(weekly_cases == 0 &
+                       ifelse(all(daily_cases == 0 &
                                     cumulative < cap_cases),
                               1, 0)) %>%
     dplyr::ungroup()
