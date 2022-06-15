@@ -71,7 +71,6 @@ outbreak_model <- function(num.initial.cases = NULL, prop.ascertain = NULL,
   effective_r0_vect <- c()
   cases_in_gen_vect <- c()
 
-
   # Model loop
   while (latest.onset < cap_max_days & total.cases < cap_cases & !extinct) {
 
@@ -98,30 +97,9 @@ outbreak_model <- function(num.initial.cases = NULL, prop.ascertain = NULL,
     extinct <- all(case_data$isolated)
   }
 
-  # # Prepare output
-  daily_cases <- case_data[, day := floor(onset)
-  ][, .(daily_cases = .N), by = day]
-  # maximum outbreak days
-  max_day <- floor(cap_max_days)
-  # weeks with 0 cases in 0:max_day
-  missing_days <- (0:max_day)[!(0:max_day %in% daily_cases$day)]
+  # # # Prepare output
+  results <- case_data[,`:=`(effective_r0 = mean(effective_r0_vect,na.rm = TRUE),
+                             cases_per_gen = list(cases_in_gen_vect))]
 
-  # add in missing days if any are missing
-  if (length(missing_days > 0)) {
-    daily_cases <- data.table::rbindlist(list(daily_cases,
-                                              data.table(day = missing_days,
-                                                         daily_cases = 0)))
-  }
-  # order and sum up
-  daily_cases <- daily_cases[order(day)
-  ][, cumulative := cumsum(daily_cases)]
-  # cut at max_day
-  daily_cases <- daily_cases[day <= max_day]
-
-  # Add effective R0
-  daily_cases <- daily_cases[, `:=`(effective_r0 = mean(effective_r0_vect,
-                                                        na.rm = TRUE),
-                                    cases_per_gen = list(cases_in_gen_vect))]
-  # return
-  return(daily_cases)
+  return(results)
 }

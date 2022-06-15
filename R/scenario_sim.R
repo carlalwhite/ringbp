@@ -67,9 +67,5 @@ scenario_sim <- function(n.sim = NULL, prop.ascertain = NULL, cap_max_days = NUL
                                              prop.asym = prop.asym,
                                              quarantine = quarantine))
 
-
-  # bind output together and add simulation index
-  res <- data.table::rbindlist(res)
-  res[, sim := rep(1:n.sim, rep(floor(cap_max_days) + 1, n.sim)), ]
   return(res)
 }
