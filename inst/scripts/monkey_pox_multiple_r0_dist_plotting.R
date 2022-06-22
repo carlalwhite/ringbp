@@ -23,15 +23,16 @@ individ_plots <- lapply(1:length(sweep_results$scenario), function(i)
   arrangeGrob(single_plot_simulations(plot_data[[i]],c("day","cumulative","sim"),avg_data[[i]]),
   single_plot_nbinom(probs[[i]], probs_to_plot=c(0:10)),
   single_prob_table(probs[[i]], probs_for_table=c("0","1","2-4","5-10")),
-  layout_matrix = rbind(c(1,1,1),c(2,2,3)))
+  layout_matrix = rbind(c(1,1,1),c(2,2,3)), top=paste0("R0 = ",sweep_results$r0community[i],
+                                                                      ", k = ", sweep_results$disp.com[i]))
 )
 
-plot1 <- grid.arrange(individ_plots[[1]],individ_plots[[2]],individ_plots[[3]],nrow=1,ncol=3) %>%
-  ggsave(filename="inst/plots/plot1.png", width=8*1.5, height=4*1.5)
+plot1 <- grid.arrange(individ_plots[[1]],individ_plots[[2]],individ_plots[[3]],nrow=1,ncol=3,top=) %>%
+  ggsave(filename="inst/plots/scenario1.png", width=8*1.5, height=4*1.5)
 plot2 <- grid.arrange(individ_plots[[4]],individ_plots[[5]],individ_plots[[6]],nrow=1) %>%
-  ggsave(filename="inst/plots/plot2.png", width=8*1.5, height=4*1.5)
+  ggsave(filename="inst/plots/scenario2.png", width=8*1.5, height=4*1.5)
 plot3 <- grid.arrange(individ_plots[[7]],individ_plots[[8]],individ_plots[[9]],nrow=1) %>%
-  ggsave(filename="inst/plots/plot3.png", width=8*1.5, height=4*1.5)
+  ggsave(filename="inst/plots/scenario3.png", width=8*1.5, height=4*1.5)
 
 
 

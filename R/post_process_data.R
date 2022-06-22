@@ -45,8 +45,9 @@ create_averages_data <- function(results) {
 
   outbreak_averages <- results %>%
     group_by(day) %>%
-    summarise(mean=mean(cumulative),median=median(cumulative)) %>%
-    pivot_longer(cols=c(mean,median),values_to = "value",names_to = "label")
+    summarise(mean=mean(cumulative),median=median(cumulative),
+              quartile_25=quantile(cumulative,0.25), quartile_75=quantile(cumulative,0.75)) %>%
+    pivot_longer(cols=c(mean,median,quartile_25,quartile_75),values_to = "value",names_to = "label")
 
   return(outbreak_averages)
 }

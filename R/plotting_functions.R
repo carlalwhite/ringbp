@@ -46,7 +46,9 @@ single_plot_nbinom <- function(prob_data, probs_to_plot) {
     geom_bar(stat = "identity", fill = "#67A29B")+
     theme_bw()+
     scale_x_continuous(breaks = seq(as.numeric(probs_to_plot[1]),
-                                    as.numeric(probs_to_plot[length(probs_to_plot)]), by = 1))
+                                    as.numeric(probs_to_plot[length(probs_to_plot)]), by = 1))+
+    xlab("Probability result")+
+    ylab("Density")
 
   pmf <- ggplotGrob(pmf)
   return(pmf)
