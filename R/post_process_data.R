@@ -81,6 +81,35 @@ sims_to_plot <- function(results,no_of_sims,end_day) {
 }
 
 
+#' Function to create probability table for nbinom distribution
+#'
+#' @return table of probabilities
+#' @export
+#' @examples
+#'
+create_prob_table <- function(r0,disp,prob_groups) {
+
+  prob_table <- data.frame(x=prob_groups[[1]],P=dnbinom(prob_groups[[1]],size=disp,mu=r0))
+
+  grouped_rows <- sapply(prob_groups[2:length(prob_groups)], function(x){
+    c(x=paste0(x[1],"-",x[length(x)]),P=sum(dnbinom(x,size=disp,mu=r0)))
+  }) %>%
+    t()
+
+  prob_table <- prob_table %>%
+    rbind.data.frame(grouped_rows)
+
+  prob_table$P <- as.numeric(prob_table$P)
+
+  prob_table <- prob_table %>%
+    mutate('%'=round(P*100))
+
+  return(prob_table)
+
+}
+
+
+
 #' Function to select sim results for branching vis
 #'
 #' @param sim_no_list list with the sim numbers required for exporting

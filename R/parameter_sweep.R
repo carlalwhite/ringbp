@@ -84,18 +84,22 @@ parameter_sweep <- function(scenarios = NULL, samples = 1,
     tidyr::nest() %>%
     dplyr::ungroup() %>%
     ##Randomise the order of scenarios - helps share the load across cores
-    dplyr::sample_frac(size = 1, replace = FALSE) %>%
+    # dplyr::sample_frac(size = 1, replace = FALSE) %>%
     dplyr::mutate(sims = furrr::future_map(
       data,
       ~ safe_sim_fn(n.sim = samples,
                num.initial.cases = .$num.initial.cases,
                r0community = .$r0community,
+               disp.com = .$disp.com,
                r0isolated = .$r0isolated,
+               disp.iso = .$disp.iso,
                dist_shape = .$dist_shape,
                dist_scale = .$dist_scale,
                delay_shape = .$delay_shape,
                delay_scale = .$delay_scale,
-               prop.ascertain = .$prop.ascertain
+               prop.ascertain = .$prop.ascertain,
+               prop.asym = .$prop.asym,
+               k = .$k
       )[[1]],
       .progress = show_progress,
       .options = furrr::future_options(scheduling = 20)
