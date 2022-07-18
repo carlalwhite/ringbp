@@ -102,7 +102,7 @@ parameter_sweep <- function(scenarios = NULL, samples = 1,
                k = .$k
       )[[1]],
       .progress = show_progress,
-      .options = furrr::future_options(scheduling = 20)
+      .options = furrr::furrr_options(scheduling = 20)
     )) %>%
     tidyr::unnest(cols = "data")
 

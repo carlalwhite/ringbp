@@ -65,7 +65,7 @@ create_averages_data <- function(results) {
 sims_to_plot <- function(results,no_of_sims,end_day) {
 
   sims <- results %>%
-    filter(day==end_day & cumulative > no_of_sims) %>%
+    filter(day==end_day & cumulative > 5) %>%
     arrange(cumulative) %>%
     filter(row_number() %in% floor(seq(1,length(day),length.out=no_of_sims))) %>%
     select(sim) %>% arrange(sim)
@@ -127,10 +127,14 @@ branching_output <- function(results,sim_no_list,params) {
       mutate_if(is.numeric, floor) %>%
       arrange(onset)
 
+    res$onset <- res$onset-res$onset[1]
+    res <- res[-c(1),]
+    result = data.frame(results = results[[sim_no_list[i]]], params = params)
+
     write.csv(res,paste0("inst/outputs/branching_results_",Sys.Date(),"_r",params$r0community,"_disp",
                          params$disp.com,"_ic",params$num.initial.cases,"_",i,".csv"),row.names = FALSE)
 
-    saveRDS(params,paste0("inst/outputs/branching_results_",Sys.Date(),"_r",params$r0community,"_disp",
+    saveRDS(result,paste0("inst/outputs/branching_results_",Sys.Date(),"_r",params$r0community,"_disp",
                           params$disp.com,"_ic",params$num.initial.cases,"_",i,".rds"))
   }
 
